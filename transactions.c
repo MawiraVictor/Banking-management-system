@@ -18,7 +18,7 @@ void depositMoney(){
         printf("\tAmount: +%d\n", depAmount);
         printf("\tNew balance: %d\n", amount);
     }else{
-        print("\n\tInvalid amount!\n");
+        printf("\n\tInvalid amount!\n");
     }
     printFooter();
 }
