@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 char name[20];
 int depAmount, amount=50, accNumber, withAmount, transMoney;
@@ -17,7 +18,9 @@ int main(){
 
     system("color 30");
     printf("Enter your name: ");
-    gets(name); //used gets() sice we store a name which is multi-word
+
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = 0;
 
     printf("Enter your account No: ");
     scanf("%d", &accNumber);
@@ -105,6 +108,11 @@ void transferMoney(){
 }
 
 void accountDetails(){
+    printf("\n\tDISPLAYING ACCOUNT DETAILS \n\n");
+    printf("Hello %s\n", name);
+    printf("Your account details are: \n");
+    printf("Your account Number is %d\n", accNumber );
+    printf("Your current balance is: %d\n", amount);
 }
 
 void transactionDetails(){
