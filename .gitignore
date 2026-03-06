@@ -1,0 +1,15 @@
+# Ignore compiled executable files
+main.exe
+*.exe
+
+# Ignore compiled object files
+main.o
+*.o
+
+# Ignore VS Code settings folder
+.vscode/
+
+# Ignore other common files
+*.log
+*.tmp
+*.swp
