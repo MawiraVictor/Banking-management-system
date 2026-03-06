@@ -3,6 +3,7 @@
 #include<string.h>
 #include "headers/account.h"
 #include "headers/transaction.h"
+#include "headers/history.h"
 #include "headers/utils.h"
 int main(){
     int choice;
