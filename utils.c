@@ -17,6 +17,7 @@ void printFooter() {
 }
 
 void menu() {
+    system("cls");
     printHeader("MAIN MENU");
     printf("\t1. Deposit money\n");
     printf("\t2. Withdraw money\n");
