@@ -22,7 +22,6 @@ int main(){
 
     while(1) {
         menu();
-        printf("Enter your choice: ");
         scanf("%d", &choice);
         clearInputBuffer();
 
