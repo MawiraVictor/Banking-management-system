@@ -5,6 +5,7 @@
 extern char name[20];
 extern int amount;
 extern int accNumber;
+extern int choice;
 
 // Function declarations
 void accountDetails();
