@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include "headers/account.h"
 #include "headers/transaction.h"
 #include "headers/utils.h"
@@ -16,7 +17,7 @@ int main(){
     scanf("%d", &accNumber);
     clearInputBuffer();
 
-    addTransaction("ACCOUNT OPENED", 500);//Add initial amount the account should hold
+    addTransaction("ACCOUNT OPENED", 500); //Add initial amount the account should hold
 
     while(1) {
         menu();
