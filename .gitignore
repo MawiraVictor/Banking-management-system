@@ -8,6 +8,7 @@ main.o
 
 # Ignore VS Code settings folder
 .vscode/
+*~
 
 # Ignore other common files
 *.log
