@@ -107,11 +107,24 @@ void load_login_dialog() {
     
     // Get the entry fields
     entry_account = GTK_WIDGET(gtk_builder_get_object(builder, "entryAccount"));
+    if (!entry_account) {
+        // Try alternative ID from your Glade file
+        entry_account = GTK_WIDGET(gtk_builder_get_object(builder, "entryAcco"));
+    }
+    
     entry_pin = GTK_WIDGET(gtk_builder_get_object(builder, "entryPin"));
     
     // Get the buttons
     GtkWidget *login_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnLoginSubmit"));
     GtkWidget *cancel_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnLoginCancel"));
+    
+    // Debug output to see what's found
+    printf("Login dialog widgets:\n");
+    printf("  login_dialog: %s\n", login_dialog ? "OK" : "NULL");
+    printf("  entry_account: %s\n", entry_account ? "OK" : "NULL");
+    printf("  entry_pin: %s\n", entry_pin ? "OK" : "NULL");
+    printf("  login_btn: %s\n", login_btn ? "OK" : "NULL");
+    printf("  cancel_btn: %s\n", cancel_btn ? "OK" : "NULL");
     
     // Connect signals
     if (login_btn) {
@@ -137,6 +150,9 @@ int main(int argc, char *argv[]) {
     
     // Load the login dialog first
     load_login_dialog();
+    if (login_dialog == NULL) {
+        printf("WARNING: Login dialog failed to load. Login button may not work.\n");
+    }
     
     // Load the main window
     builder = gtk_builder_new();
@@ -145,6 +161,16 @@ int main(int argc, char *argv[]) {
         printf("Error loading main UI: %s\n", error->message);
         return 1;
     }
+
+        // Verify main window widgets
+    main_window = GTK_WIDGET(gtk_builder_get_object(builder, "welcomeWindow"));
+    login_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnLogin"));
+    register_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnRegister"));
+    
+    printf("Main window widgets:\n");
+    printf("  main_window: %s\n", main_window ? "OK" : "NULL");
+    printf("  login_btn: %s\n", login_btn ? "OK" : "NULL");
+    printf("  register_btn: %s\n", register_btn ? "OK" : "NULL");
     
     // Get pointers to widgets
     main_window = GTK_WIDGET(gtk_builder_get_object(builder, "welcomeWindow"));
