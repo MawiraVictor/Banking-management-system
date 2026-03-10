@@ -14,3 +14,7 @@ main.o
 *.log
 *.tmp
 *.swp
+# Ignore swap/temp files
+ui/#*.ui#
+*.swp
+*.tmp
