@@ -43,8 +43,82 @@ void on_register_submit_clicked(GtkButton *button, gpointer data);
 void on_register_cancel_clicked(GtkButton *button, gpointer data);
 void on_register_clicked(GtkButton *button, gpointer data);
 
+// Function to load last 5 transactions for an account
+void load_transactions(const char *account_number, char *transactions, int size) {
+    FILE *file = fopen("transactions.txt", "r");
+    if (!file) {
+        strcpy(transactions, "No transactions found");
+        return;
+    }
+    
+    // Temporary array to store all transactions for this account
+    char all_transactions[100][256];
+    int count = 0;
+    char line[256];
+    
+    // Read all transactions for this account
+    while (fgets(line, sizeof(line), file)) {
+        char acc[15];
+        sscanf(line, "%[^,]", acc);
+        
+        if (strcmp(acc, account_number) == 0) {
+            // Store this transaction (remove the newline at the end)
+            line[strcspn(line, "\n")] = 0;
+            strcpy(all_transactions[count], line);
+            count++;
+        }
+    }
+    fclose(file);
+    
+    if (count == 0) {
+        strcpy(transactions, "No transactions yet");
+        return;
+    }
+    
+    // Clear the transactions string
+    transactions[0] = '\0';
+    
+    // Show last 5 transactions (most recent first)
+    int start = (count > 5) ? count - 5 : 0;
+    for (int i = count - 1; i >= start; i--) {
+        char type[20], amount[20], desc[50];
+        float amt;
+        
+        // Parse transaction line: account,type,amount,description,date
+        sscanf(all_transactions[i], "%*[^,],%[^,],%f,%[^,],%s", type, &amt, desc);
+        
+        char transaction_line[200];
+        if (strcmp(type, "deposit") == 0) {
+            snprintf(transaction_line, sizeof(transaction_line), "+ KES %.2f %s\n", amt, desc);
+        } else if (strcmp(type, "withdraw") == 0) {
+            snprintf(transaction_line, sizeof(transaction_line), "- KES %.2f %s\n", amt, desc);
+        } else if (strcmp(type, "transfer") == 0) {
+            snprintf(transaction_line, sizeof(transaction_line), "→ KES %.2f %s\n", amt, desc);
+        }
+        
+        strcat(transactions, transaction_line);
+    }
+}
+
+// Function to save a transaction
+void save_transaction(const char *account_number, const char *type, float amount, const char *description) {
+    FILE *file = fopen("transactions.txt", "a");
+    if (!file) {
+        printf("Error opening transactions.txt for writing\n");
+        return;
+    }
+    
+    // Get current time
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    char date[20];
+    strftime(date, sizeof(date), "%Y-%m-%d %H:%M", t);
+    
+    fprintf(file, "%s,%s,%.2f,%s,%s\n", account_number, type, amount, description, date);
+    fclose(file);
+}
  
- void show_dashboard(const char *full_name, float balance, const char *transactions) {
+void show_dashboard(const char *full_name, float balance, const char *transactions) {
     // Update welcome label
     char welcome_text[100];
     snprintf(welcome_text, sizeof(welcome_text), "Welcome %s", full_name);
@@ -229,7 +303,14 @@ void on_register_submit_clicked(GtkButton *button, gpointer data) {
     generate_pin(new_acc.pin);
     
     // Save to file
+    // Save to file
     save_account(&new_acc);
+
+    // Save initial deposit transaction
+    char deposit_desc[50];
+    snprintf(deposit_desc, sizeof(deposit_desc), "Initial deposit");
+    save_transaction(new_acc.account_number, "deposit", deposit, deposit_desc);
+
     
     // Show success message with account details
     char success_msg[300];
@@ -310,15 +391,12 @@ void on_login_submit_clicked(GtkButton *button, gpointer user_data) {
            acc.account_number, acc.pin, acc.full_name,
            acc.id_number, acc.kra_pin, &acc.balance);
 
-    // Load last 3 transactions (dummy for now)
-    char transactions[500] = 
-        "+ KES 2000 Deposit\n"
-        "- KES 500 Withdraw\n"
-        "+ KES 1000 Transfer\n";
+    // Load REAL transactions from file
+    char transactions[1000] = "";
+    load_transactions(acc.account_number, transactions, sizeof(transactions));
 
     gtk_widget_hide(login_dialog);
     show_dashboard(acc.full_name, acc.balance, transactions);
-
 } else {
     show_error(GTK_WINDOW(login_dialog), "Invalid account number or PIN");
     gtk_entry_set_text(GTK_ENTRY(entry_pin), "");
