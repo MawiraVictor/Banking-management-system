@@ -77,7 +77,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Account Number : </property>
+                    <property name="label" translatable="yes">Acc Number : </property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -114,7 +114,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">PIN : </property>
+                    <property name="label" translatable="yes">             PIN :  </property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
