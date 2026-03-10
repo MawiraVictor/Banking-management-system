@@ -14,6 +14,10 @@ GtkWidget *entry_id = NULL;
 GtkWidget *entry_kra = NULL;
 GtkWidget *entry_phone = NULL;
 GtkWidget *entry_deposit = NULL;
+GtkWidget *dashboardWindow = NULL;
+GtkWidget *lblWelcome = NULL;
+GtkWidget *lblBalance = NULL;
+GtkWidget *txtTransactions = NULL;
 GtkWidget *main_window = NULL;
 
 // Account structure
@@ -38,6 +42,29 @@ void load_registration_dialog();
 void on_register_submit_clicked(GtkButton *button, gpointer data);
 void on_register_cancel_clicked(GtkButton *button, gpointer data);
 void on_register_clicked(GtkButton *button, gpointer data);
+
+ 
+ void show_dashboard(const char *full_name, float balance, const char *transactions) {
+    // Update welcome label
+    char welcome_text[100];
+    snprintf(welcome_text, sizeof(welcome_text), "Welcome %s", full_name);
+    gtk_label_set_text(GTK_LABEL(lblWelcome), welcome_text);
+
+    // Update balance - NOW USING LABEL
+    char balance_text[50];
+    snprintf(balance_text, sizeof(balance_text), "KES %.2f", balance);
+    gtk_label_set_text(GTK_LABEL(lblBalance), balance_text);  // This will work now!
+
+    // Update transactions - KEEP AS TEXTVIEW
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtTransactions));
+    gtk_text_buffer_set_text(buffer, transactions, -1);
+
+    // Show dashboard window
+    gtk_widget_show_all(dashboardWindow);
+
+    // Optional: hide main window
+    gtk_widget_hide(main_window);
+}
 
 // Show error message
 void show_error(GtkWindow *parent, const char *message) {
@@ -142,6 +169,24 @@ void load_registration_dialog() {
     g_signal_connect(submit_btn, "clicked", G_CALLBACK(on_register_submit_clicked), NULL);
     g_signal_connect(cancel_btn, "clicked", G_CALLBACK(on_register_cancel_clicked), NULL);
     g_signal_connect(register_dialog, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
+void load_dashboard() {
+    GtkBuilder *builder = gtk_builder_new();
+    GError *error = NULL;
+
+    if (!gtk_builder_add_from_file(builder, "ui/dashboard.ui", &error)) {
+        printf("Error loading dashboard: %s\n", error->message);
+        g_error_free(error);
+        return;
+    }
+
+    dashboardWindow = GTK_WIDGET(gtk_builder_get_object(builder, "dashboardWindow"));
+    lblWelcome = GTK_WIDGET(gtk_builder_get_object(builder, "lblWelcome"));
+    lblBalance = GTK_WIDGET(gtk_builder_get_object(builder, "lblBalance"));
+    txtTransactions = GTK_WIDGET(gtk_builder_get_object(builder, "txtTransactions"));
+
+    g_signal_connect(dashboardWindow, "destroy", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
 }
 
 // Handle registration submit
@@ -259,15 +304,25 @@ void on_login_submit_clicked(GtkButton *button, gpointer user_data) {
     fclose(file);
     
     if (found) {
-        show_info(GTK_WINDOW(login_dialog), "Login successful! Welcome to your account.");
-        gtk_entry_set_text(GTK_ENTRY(entry_account), "");
-        gtk_entry_set_text(GTK_ENTRY(entry_pin), "");
-        gtk_widget_hide(login_dialog);
-        // Here you would show the account dashboard
-    } else {
-        show_error(GTK_WINDOW(login_dialog), "Invalid account number or PIN");
-        gtk_entry_set_text(GTK_ENTRY(entry_pin), "");
-    }
+    // Read full account info from file
+    Account acc;
+    sscanf(line, "%[^,],%[^,],%[^,],%[^,],%[^,],%f",
+           acc.account_number, acc.pin, acc.full_name,
+           acc.id_number, acc.kra_pin, &acc.balance);
+
+    // Load last 3 transactions (dummy for now)
+    char transactions[500] = 
+        "+ KES 2000 Deposit\n"
+        "- KES 500 Withdraw\n"
+        "+ KES 1000 Transfer\n";
+
+    gtk_widget_hide(login_dialog);
+    show_dashboard(acc.full_name, acc.balance, transactions);
+
+} else {
+    show_error(GTK_WINDOW(login_dialog), "Invalid account number or PIN");
+    gtk_entry_set_text(GTK_ENTRY(entry_pin), "");
+}
 }
 
 // Login cancel handler
@@ -318,6 +373,7 @@ int main(int argc, char *argv[]) {
     // Load dialogs
     load_login_dialog();
     load_registration_dialog();
+    load_dashboard();
     
     // Load main window
     builder = gtk_builder_new();
