@@ -1,6 +1,7 @@
 # Ignore compiled executable files
 main.exe
 *.exe
+*.txt
 
 # Ignore compiled object files
 main.o
