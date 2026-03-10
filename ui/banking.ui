@@ -5,6 +5,8 @@
   <object class="GtkWindow" id="welcomeWindow">
     <property name="name">welcomeWindow</property>
     <property name="can-focus">False</property>
+    <property name="default-width">900</property>
+    <property name="default-height">600</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>

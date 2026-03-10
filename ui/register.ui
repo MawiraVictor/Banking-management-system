@@ -34,6 +34,7 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="margin-end">20</property>
             <property name="orientation">vertical</property>
             <property name="spacing">8</property>
             <child>
@@ -72,6 +73,7 @@
                   <object class="GtkEntry" id="entryFullName">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="margin-end">20</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -107,6 +109,7 @@
                   <object class="GtkEntry" id="entryID">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="margin-end">20</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -142,6 +145,7 @@
                   <object class="GtkEntry" id="entryKRA">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="margin-end">20</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -177,6 +181,7 @@
                   <object class="GtkEntry" id="entryPhone">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="margin-end">20</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -212,6 +217,7 @@
                   <object class="GtkEntry" id="entryDeposit">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="margin-end">20</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -245,7 +251,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="btnRegisterSubmit">
                     <property name="label" translatable="yes">Submit</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
