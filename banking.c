@@ -32,8 +32,7 @@ GtkWidget *entry_transfer_description = NULL;
 GtkWidget *entry_deposit_amount = NULL;
 GtkWidget *entry_withdraw_amount = NULL;
 GtkWidget *entry_transfer_amount = NULL;
-GtkWidget *entry_transfer_account = NULL;
-GtkWidget *entry_transfer_description = NULL;
+
 
 //Current logged in user
 char current_account[15] = "";
