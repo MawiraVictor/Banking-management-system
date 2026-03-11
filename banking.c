@@ -842,6 +842,9 @@ int main(int argc, char *argv[]) {
     load_login_dialog();
     load_registration_dialog();
     load_dashboard();
+    load_deposit_dialog();    
+    load_withdraw_dialog();   
+    load_transfer_dialog();   
     
     // Load main window
     builder = gtk_builder_new();
