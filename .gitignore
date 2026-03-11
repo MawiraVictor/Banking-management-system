@@ -17,5 +17,6 @@ main.o
 *.swp
 # Ignore swap/temp files
 ui/#*.ui#
+ui/#*.glade#
 *.swp
 *.tmp
