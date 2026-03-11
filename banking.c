@@ -20,6 +20,18 @@ GtkWidget *lblBalance = NULL;
 GtkWidget *txtTransactions = NULL;
 GtkWidget *main_window = NULL;
 
+// Transaction dialogs entries
+GtkWidget *enrty_deposit_amount = NULL;
+GtkWidget *enrty_withdraw_amount = NULL;
+GtkWidget *enrty_transfer_money = NULL;
+GtkWidget *entry_transfer_account = NULL;
+GtkWidget *entry_transfer_description = NULL;
+
+//Current logged in user
+char current_account[15] = "";
+char current_fullname[50] ="";
+float current_balance = 0;
+
 // Account structure
 typedef struct {
     char account_number[15];
