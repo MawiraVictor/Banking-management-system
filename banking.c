@@ -54,6 +54,13 @@ void load_registration_dialog();
 void on_register_submit_clicked(GtkButton *button, gpointer data);
 void on_register_cancel_clicked(GtkButton *button, gpointer data);
 void on_register_clicked(GtkButton *button, gpointer data);
+void load_transactions(const char *account_number, char *transactions, int size);
+void save_transactions(const char *account_number, const char *type, float amount, char *description);
+void update_account_balance(const char*account_number, float new_balance);
+void refresh_dashboard();
+void load_deposit_dialog();
+void load_withdraw_dialog();
+void load_tranfer_dialog();
 
 // Function to load last 5 transactions for an account
 void load_transactions(const char *account_number, char *transactions, int size) {
