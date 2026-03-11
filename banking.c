@@ -287,7 +287,19 @@ void load_dashboard() {
     lblWelcome = GTK_WIDGET(gtk_builder_get_object(builder, "lblWelcome"));
     lblBalance = GTK_WIDGET(gtk_builder_get_object(builder, "lblBalance"));
     txtTransactions = GTK_WIDGET(gtk_builder_get_object(builder, "txtTransactions"));
-
+    
+    // Get dashboard buttons
+    GtkWidget *btn_deposit = GTK_WIDGET(gtk_builder_get_object(builder, "btnDeposit"));
+    GtkWidget *btn_withdraw = GTK_WIDGET(gtk_builder_get_object(builder, "btnWithdraw"));
+    GtkWidget *btn_transfer = GTK_WIDGET(gtk_builder_get_object(builder, "btnTransfer"));
+    GtkWidget *btn_logout = GTK_WIDGET(gtk_builder_get_object(builder, "btnLogout"));
+    
+    // Connect button signals
+    g_signal_connect(btn_deposit, "clicked", G_CALLBACK(on_deposit_clicked), NULL);
+    g_signal_connect(btn_withdraw, "clicked", G_CALLBACK(on_withdraw_clicked), NULL);
+    g_signal_connect(btn_transfer, "clicked", G_CALLBACK(on_transfer_clicked), NULL);
+    g_signal_connect(btn_logout, "clicked", G_CALLBACK(on_logout_clicked), NULL);
+    
     g_signal_connect(dashboardWindow, "destroy", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
 }
 
