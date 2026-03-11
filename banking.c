@@ -18,12 +18,20 @@ GtkWidget *dashboardWindow = NULL;
 GtkWidget *lblWelcome = NULL;
 GtkWidget *lblBalance = NULL;
 GtkWidget *txtTransactions = NULL;
+GtkWidget *deposit_dialog = NULL;
+GtkWidget *withdraw_dialog = NULL;
+GtkWidget *transfer_dialog = NULL;
 GtkWidget *main_window = NULL;
 
 // Transaction dialogs entries
 GtkWidget *enrty_deposit_amount = NULL;
 GtkWidget *enrty_withdraw_amount = NULL;
 GtkWidget *enrty_transfer_money = NULL;
+GtkWidget *entry_transfer_account = NULL;
+GtkWidget *entry_transfer_description = NULL;
+GtkWidget *entry_deposit_amount = NULL;
+GtkWidget *entry_withdraw_amount = NULL;
+GtkWidget *entry_transfer_amount = NULL;
 GtkWidget *entry_transfer_account = NULL;
 GtkWidget *entry_transfer_description = NULL;
 
