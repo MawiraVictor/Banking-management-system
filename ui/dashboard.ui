@@ -129,18 +129,20 @@
                 <property name="label-xalign">0</property>
                 <property name="shadow-type">none</property>
                 <child>
-                  <object class="GtkLabel" id="lblBalance">
+                  <object class="GtkAlignment">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="xalign">0</property>
-                      <attributes>
-                        <attribute name="scale" value="1.5"/>
-                        <attribute name="weight" value="bold"/>
-                      </attributes>
+                    <property name="left-padding">12</property>
+                    <child>
+                      <object class="GtkTextView" id="lblBalances">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child type="label">
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lblBalance">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Balance : </property>
