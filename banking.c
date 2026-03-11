@@ -61,6 +61,15 @@ void refresh_dashboard();
 void load_deposit_dialog();
 void load_withdraw_dialog();
 void load_tranfer_dialog();
+void on_deposit_clicked(GtkButton *button, gpointer data);
+void on_withdraw_clicked(GtkButton *button, gpointer data);
+void on_tranfer_clicked(GtkButton *button, gpointer data);
+void on_deposit_submit_clicked(GtkButton *button, gpointer data);
+void on_withdraw_submit_clicked(GtkButton *button, gpointer data);
+void on_withdraw_submit_clicked(GtkButton *button, gpointer data);
+void on_transfer_submit_clicked(GtkButton *button, gpointer data);
+void on_dialog_cancel_clicked(GtkButton *button, gpointer data);
+void on_logout_clicked(GtkButton *button, gpointer data);
 
 // Function to load last 5 transactions for an account
 void load_transactions(const char *account_number, char *transactions, int size) {
@@ -457,6 +466,339 @@ void load_login_dialog() {
     g_signal_connect(login_btn, "clicked", G_CALLBACK(on_login_submit_clicked), NULL);
     g_signal_connect(cancel_btn, "clicked", G_CALLBACK(on_login_cancel_clicked), NULL);
     g_signal_connect(login_dialog, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
+// Function to update balance in accounts.txt
+void update_account_balance(const char *account_number, float new_balance) {
+    FILE *file = fopen("accounts.txt", "r");
+    FILE *temp = fopen("temp.txt", "w");
+    
+    if (!file || !temp) {
+        printf("Error updating account balance\n");
+        return;
+    }
+    
+    char line[200];
+    while (fgets(line, sizeof(line), file)) {
+        char acc[15];
+        sscanf(line, "%[^,]", acc);
+        
+        if (strcmp(acc, account_number) == 0) {
+            // Update this account's balance
+            Account acc_data;
+            sscanf(line, "%[^,],%[^,],%[^,],%[^,],%[^,],%f",
+                   acc_data.account_number, acc_data.pin, acc_data.full_name,
+                   acc_data.id_number, acc_data.kra_pin, &acc_data.balance);
+            
+            fprintf(temp, "%s,%s,%s,%s,%s,%.2f\n",
+                    acc_data.account_number, acc_data.pin, acc_data.full_name,
+                    acc_data.id_number, acc_data.kra_pin, new_balance);
+        } else {
+            fprintf(temp, "%s", line);
+        }
+    }
+    
+    fclose(file);
+    fclose(temp);
+    
+    remove("accounts.txt");
+    rename("temp.txt", "accounts.txt");
+    
+    // Update current balance
+    current_balance = new_balance;
+}
+
+// Refresh dashboard with latest data
+void refresh_dashboard() {
+    // Update welcome label
+    char welcome_text[100];
+    snprintf(welcome_text, sizeof(welcome_text), "Welcome %s", current_fullname);
+    gtk_label_set_text(GTK_LABEL(lblWelcome), welcome_text);
+
+    // Update balance
+    char balance_text[50];
+    snprintf(balance_text, sizeof(balance_text), "KES %.2f", current_balance);
+    gtk_label_set_text(GTK_LABEL(lblBalance), balance_text);
+
+    // Update transactions
+    char transactions[1000] = "";
+    load_transactions(current_account, transactions, sizeof(transactions));
+    
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtTransactions));
+    gtk_text_buffer_set_text(buffer, transactions, -1);
+}
+
+// Load deposit dialog
+void load_deposit_dialog() {
+    GtkBuilder *builder = gtk_builder_new();
+    GError *error = NULL;
+    
+    if (!gtk_builder_add_from_file(builder, "ui/deposit.ui", &error)) {
+        printf("Error loading deposit dialog: %s\n", error->message);
+        g_error_free(error);
+        return;
+    }
+    
+    deposit_dialog = GTK_WIDGET(gtk_builder_get_object(builder, "depositDialog"));
+    entry_deposit_amount = GTK_WIDGET(gtk_builder_get_object(builder, "entryDepositAmount"));
+    
+    GtkWidget *submit_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnDepositSubmit"));
+    GtkWidget *cancel_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnDepositCancel"));
+    
+    g_signal_connect(submit_btn, "clicked", G_CALLBACK(on_deposit_submit_clicked), NULL);
+    g_signal_connect(cancel_btn, "clicked", G_CALLBACK(on_dialog_cancel_clicked), deposit_dialog);
+    g_signal_connect(deposit_dialog, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
+// Load withdraw dialog
+void load_withdraw_dialog() {
+    GtkBuilder *builder = gtk_builder_new();
+    GError *error = NULL;
+    
+    if (!gtk_builder_add_from_file(builder, "ui/withdraw.ui", &error)) {
+        printf("Error loading withdraw dialog: %s\n", error->message);
+        g_error_free(error);
+        return;
+    }
+    
+    withdraw_dialog = GTK_WIDGET(gtk_builder_get_object(builder, "withdrawDialog"));
+    entry_withdraw_amount = GTK_WIDGET(gtk_builder_get_object(builder, "entryWithdrawAmount"));
+    
+    GtkWidget *submit_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnWithdrawSubmit"));
+    GtkWidget *cancel_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnWithdrawCancel"));
+    
+    g_signal_connect(submit_btn, "clicked", G_CALLBACK(on_withdraw_submit_clicked), NULL);
+    g_signal_connect(cancel_btn, "clicked", G_CALLBACK(on_dialog_cancel_clicked), withdraw_dialog);
+    g_signal_connect(withdraw_dialog, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
+// Load transfer dialog
+void load_transfer_dialog() {
+    GtkBuilder *builder = gtk_builder_new();
+    GError *error = NULL;
+    
+    if (!gtk_builder_add_from_file(builder, "ui/transfer.ui", &error)) {
+        printf("Error loading transfer dialog: %s\n", error->message);
+        g_error_free(error);
+        return;
+    }
+    
+    transfer_dialog = GTK_WIDGET(gtk_builder_get_object(builder, "transferDialog"));
+    entry_transfer_amount = GTK_WIDGET(gtk_builder_get_object(builder, "entryTransferAmount"));
+    entry_transfer_account = GTK_WIDGET(gtk_builder_get_object(builder, "entryTransferAccount"));
+    entry_transfer_description = GTK_WIDGET(gtk_builder_get_object(builder, "entryTransferDescription"));
+    
+    GtkWidget *submit_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnTransferSubmit"));
+    GtkWidget *cancel_btn = GTK_WIDGET(gtk_builder_get_object(builder, "btnTransferCancel"));
+    
+    g_signal_connect(submit_btn, "clicked", G_CALLBACK(on_transfer_submit_clicked), NULL);
+    g_signal_connect(cancel_btn, "clicked", G_CALLBACK(on_dialog_cancel_clicked), transfer_dialog);
+    g_signal_connect(transfer_dialog, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
+// Dashboard button handlers
+void on_deposit_clicked(GtkButton *button, gpointer data) {
+    if (deposit_dialog) {
+        gtk_entry_set_text(GTK_ENTRY(entry_deposit_amount), "");
+        gtk_widget_show_all(deposit_dialog);
+    }
+}
+
+void on_withdraw_clicked(GtkButton *button, gpointer data) {
+    if (withdraw_dialog) {
+        gtk_entry_set_text(GTK_ENTRY(entry_withdraw_amount), "");
+        gtk_widget_show_all(withdraw_dialog);
+    }
+}
+
+void on_transfer_clicked(GtkButton *button, gpointer data) {
+    if (transfer_dialog) {
+        gtk_entry_set_text(GTK_ENTRY(entry_transfer_amount), "");
+        gtk_entry_set_text(GTK_ENTRY(entry_transfer_account), "");
+        gtk_entry_set_text(GTK_ENTRY(entry_transfer_description), "");
+        gtk_widget_show_all(transfer_dialog);
+    }
+}
+
+void on_logout_clicked(GtkButton *button, gpointer data) {
+    gtk_widget_hide(dashboardWindow);
+    gtk_widget_show_all(main_window);
+    
+    // Clear current user info
+    current_account[0] = '\0';
+    current_fullname[0] = '\0';
+    current_balance = 0;
+}
+
+// Transaction dialog handlers
+void on_deposit_submit_clicked(GtkButton *button, gpointer data) {
+    const char *amount_str = gtk_entry_get_text(GTK_ENTRY(entry_deposit_amount));
+    
+    if (strlen(amount_str) == 0) {
+        show_error(GTK_WINDOW(deposit_dialog), "Please enter an amount");
+        return;
+    }
+    
+    float amount = atof(amount_str);
+    if (amount <= 0) {
+        show_error(GTK_WINDOW(deposit_dialog), "Please enter a valid amount");
+        return;
+    }
+    
+    // Update balance
+    float new_balance = current_balance + amount;
+    update_account_balance(current_account, new_balance);
+    
+    // Save transaction
+    save_transaction(current_account, "deposit", amount, "Cash Deposit");
+    
+    // Refresh dashboard
+    refresh_dashboard();
+    
+    // Show success message
+    char success_msg[100];
+    snprintf(success_msg, sizeof(success_msg), "KES %.2f deposited successfully!", amount);
+    show_info(GTK_WINDOW(deposit_dialog), success_msg);
+    
+    // Clear and close dialog
+    gtk_entry_set_text(GTK_ENTRY(entry_deposit_amount), "");
+    gtk_widget_hide(deposit_dialog);
+}
+
+void on_withdraw_submit_clicked(GtkButton *button, gpointer data) {
+    const char *amount_str = gtk_entry_get_text(GTK_ENTRY(entry_withdraw_amount));
+    
+    if (strlen(amount_str) == 0) {
+        show_error(GTK_WINDOW(withdraw_dialog), "Please enter an amount");
+        return;
+    }
+    
+    float amount = atof(amount_str);
+    if (amount <= 0) {
+        show_error(GTK_WINDOW(withdraw_dialog), "Please enter a valid amount");
+        return;
+    }
+    
+    if (amount > current_balance) {
+        show_error(GTK_WINDOW(withdraw_dialog), "Insufficient balance");
+        return;
+    }
+    
+    // Update balance
+    float new_balance = current_balance - amount;
+    update_account_balance(current_account, new_balance);
+    
+    // Save transaction
+    save_transaction(current_account, "withdraw", amount, "Cash Withdrawal");
+    
+    // Refresh dashboard
+    refresh_dashboard();
+    
+    // Show success message
+    char success_msg[100];
+    snprintf(success_msg, sizeof(success_msg), "KES %.2f withdrawn successfully!", amount);
+    show_info(GTK_WINDOW(withdraw_dialog), success_msg);
+    
+    // Clear and close dialog
+    gtk_entry_set_text(GTK_ENTRY(entry_withdraw_amount), "");
+    gtk_widget_hide(withdraw_dialog);
+}
+
+void on_transfer_submit_clicked(GtkButton *button, gpointer data) {
+    const char *amount_str = gtk_entry_get_text(GTK_ENTRY(entry_transfer_amount));
+    const char *dest_account = gtk_entry_get_text(GTK_ENTRY(entry_transfer_account));
+    const char *description = gtk_entry_get_text(GTK_ENTRY(entry_transfer_description));
+    
+    if (strlen(amount_str) == 0 || strlen(dest_account) == 0) {
+        show_error(GTK_WINDOW(transfer_dialog), "Please fill in all fields");
+        return;
+    }
+    
+    float amount = atof(amount_str);
+    if (amount <= 0) {
+        show_error(GTK_WINDOW(transfer_dialog), "Please enter a valid amount");
+        return;
+    }
+    
+    if (amount > current_balance) {
+        show_error(GTK_WINDOW(transfer_dialog), "Insufficient balance");
+        return;
+    }
+    
+    if (strcmp(dest_account, current_account) == 0) {
+        show_error(GTK_WINDOW(transfer_dialog), "Cannot transfer to your own account");
+        return;
+    }
+    
+    // Check if destination account exists
+    FILE *file = fopen("accounts.txt", "r");
+    int dest_exists = 0;
+    float dest_balance = 0;
+    char line[200];
+    char dest_line[200];
+    
+    if (file) {
+        while (fgets(line, sizeof(line), file)) {
+            char acc[15];
+            sscanf(line, "%[^,]", acc);
+            if (strcmp(acc, dest_account) == 0) {
+                dest_exists = 1;
+                strcpy(dest_line, line);
+                break;
+            }
+        }
+        fclose(file);
+    }
+    
+    if (!dest_exists) {
+        show_error(GTK_WINDOW(transfer_dialog), "Destination account does not exist");
+        return;
+    }
+    
+    // Update sender's balance
+    float new_sender_balance = current_balance - amount;
+    update_account_balance(current_account, new_sender_balance);
+    
+    // Update receiver's balance
+    Account receiver;
+    sscanf(dest_line, "%[^,],%[^,],%[^,],%[^,],%[^,],%f",
+           receiver.account_number, receiver.pin, receiver.full_name,
+           receiver.id_number, receiver.kra_pin, &receiver.balance);
+    
+    float new_receiver_balance = receiver.balance + amount;
+    update_account_balance(dest_account, new_receiver_balance);
+    
+    // Save transactions for both accounts
+    char sender_desc[100];
+    if (strlen(description) > 0) {
+        snprintf(sender_desc, sizeof(sender_desc), "Transfer to %s: %s", dest_account, description);
+    } else {
+        snprintf(sender_desc, sizeof(sender_desc), "Transfer to %s", dest_account);
+    }
+    save_transaction(current_account, "transfer", amount, sender_desc);
+    
+    char receiver_desc[100];
+    snprintf(receiver_desc, sizeof(receiver_desc), "Transfer from %s", current_account);
+    save_transaction(dest_account, "deposit", amount, receiver_desc);
+    
+    // Refresh dashboard
+    refresh_dashboard();
+    
+    // Show success message
+    char success_msg[100];
+    snprintf(success_msg, sizeof(success_msg), "KES %.2f transferred successfully to account %s!", 
+             amount, dest_account);
+    show_info(GTK_WINDOW(transfer_dialog), success_msg);
+    
+    // Clear and close dialog
+    gtk_entry_set_text(GTK_ENTRY(entry_transfer_amount), "");
+    gtk_entry_set_text(GTK_ENTRY(entry_transfer_account), "");
+    gtk_entry_set_text(GTK_ENTRY(entry_transfer_description), "");
+    gtk_widget_hide(transfer_dialog);
+}
+
+void on_dialog_cancel_clicked(GtkButton *button, gpointer dialog) {
+    gtk_widget_hide(GTK_WIDGET(dialog));
 }
 
 int main(int argc, char *argv[]) {
