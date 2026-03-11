@@ -431,12 +431,21 @@ void on_login_submit_clicked(GtkButton *button, gpointer user_data) {
            acc.account_number, acc.pin, acc.full_name,
            acc.id_number, acc.kra_pin, &acc.balance);
 
+    // Store current user info
+    strcpy(current_account, acc.account_number);
+    strcpy(current_fullname, acc.full_name);
+    current_balance = acc.balance;
+
     // Load REAL transactions from file
     char transactions[1000] = "";
     load_transactions(acc.account_number, transactions, sizeof(transactions));
 
     gtk_widget_hide(login_dialog);
     show_dashboard(acc.full_name, acc.balance, transactions);
+    
+    // Clear login fields
+    gtk_entry_set_text(GTK_ENTRY(entry_account), "");
+    gtk_entry_set_text(GTK_ENTRY(entry_pin), "");
 } else {
     show_error(GTK_WINDOW(login_dialog), "Invalid account number or PIN");
     gtk_entry_set_text(GTK_ENTRY(entry_pin), "");
