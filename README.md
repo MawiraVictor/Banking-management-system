@@ -172,16 +172,7 @@ Banking-management-system/
 
 ### Main Window (`ui/banking.ui`)
 ```
-┌─────────────────────────────────┐
-│    PAMOJA COMMERCIAL BANK       │
-│                 │
-│                                 │
-│    Welcome to ATM Services      │
-│                                 │
-│    ┌────────┐  ┌────────┐       │
-│    │ LOGIN  │  │REGISTER│       │
-│    └────────┘  └────────┘       │
-└─────────────────────────────────┘
+![Welcome Screen](./images/welcome.png)
 ```
 
 **Widget IDs:**
@@ -191,19 +182,18 @@ Banking-management-system/
 
 ### Login Dialog (`ui/login.ui`)
 ```
-┌─────────────────────────────────┐
-│      Login to Your Account      │
-│                                 │
-│    Account Number: _________    │
-│                                 │
-│    PIN:           [****]        │
-│                                 │
-│    ┌────────┐  ┌────────┐       │
-│    │ Cancel │  │ Login  │       │
-│    └────────┘  └────────┘       │
-└─────────────────────────────────┘
+![Login Page](./images/login.png)
+```
+### Registration Page
 ```
 
+![Registration Page](./images/Register.png)
+```
+### Dashboard
+Main dashboard showing account overview:
+```
+![Dashboard](./images/dashbord.png)
+```
 **Widget IDs:**
 - `loginDialog` - Dialog window
 - `entryAccount` - Account number entry
@@ -213,19 +203,7 @@ Banking-management-system/
 
 ### Registration Dialog (`ui/register.ui`)
 ```
-┌─────────────────────────────────┐
-│        Create New Account       │
-│                                 │
-│    Full Name:  [___________]    │
-│    ID/Passport:[___________]    │
-│    KRA PIN:    [___________]    │
-│    Phone:      [___________]    │
-│    Deposit:    [___________]    │
-│                                 │
-│    ┌────────┐  ┌────────┐       │
-│    │ Cancel │  │Register│       │
-│    └────────┘  └────────┘       │
-└─────────────────────────────────┘
+ikjubjb
 ```
 
 **Widget IDs:**
@@ -284,7 +262,7 @@ typedef struct {
 
 ---
 
-## Data Management
+## Data Management (will be replaced by a secure db soon)
 
 ### File Format (`accounts.txt`)
 Accounts are stored in CSV format with the following fields:
@@ -351,26 +329,6 @@ fclose(file);
 
 ### 4. Successful Login
 Upon successful authentication, you'll see a confirmation message. (Dashboard features coming soon!)
-
----
-
-## Development Journey
-
-### Challenges Overcome
-| Challenge | Solution |
-|-----------|----------|
-| OneDrive permission issues | Moved project outside OneDrive folder |
-| GTK header not found | Used correct MSYS2 MinGW 64-bit terminal |
-| Buttons not working | Replaced GtkLabel with GtkButton widgets |
-| Dialog not found | Set proper widget IDs in Glade |
-| Signal connection errors | Verified widget types match signal types |
-
-### Key Learning Points
-1. **GTK initialization** requires proper environment setup
-2. **Glade IDs** must exactly match those used in code
-3. **Widget types** matter - Labels cannot receive click signals
-4. **File paths** should use forward slashes even on Windows
-5. **Memory management** is handled automatically by GTK
 
 ---
 
