@@ -178,7 +178,7 @@ Widget IDs:
 - `btnRegister` - Register button
 
 ### Login Dialog (ui/login.ui)
-![Login Page](./images/Register.png)
+![Login Page](./images/login.png)
 
 ### Registration Page
 ![Registration Page](./images/Register.png)
