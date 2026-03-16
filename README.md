@@ -167,44 +167,25 @@ Banking-management-system/
 ```
 
 ---
-
 ## UI Design
 
-### Main Window (`ui/banking.ui`)
-```
+### Main Window (ui/banking.ui)
 ![Welcome Screen](./images/welcome.png)
-```
 
-**Widget IDs:**
+Widget IDs:
 - `welcomeWindow` - Main application window
 - `btnLogin` - Login button
 - `btnRegister` - Register button
 
-### Login Dialog (`ui/login.ui`)
-```
-![Login Page](./images/login.png)
-```
-### Registration Page
-```
+### Login Dialog (ui/login.ui)
+![Login Page](./images/Register.png)
 
+### Registration Page
 ![Registration Page](./images/Register.png)
-```
+
 ### Dashboard
 Main dashboard showing account overview:
-```
 ![Dashboard](./images/dashbord.png)
-```
-**Widget IDs:**
-- `loginDialog` - Dialog window
-- `entryAccount` - Account number entry
-- `entryPin` - PIN entry (masked)
-- `btnLoginSubmit` - Login button
-- `btnLoginCancel` - Cancel button
-
-### Registration Dialog (`ui/register.ui`)
-```
-ikjubjb
-```
 
 **Widget IDs:**
 - `registerDialog` - Dialog window
